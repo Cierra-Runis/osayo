@@ -1,0 +1,20 @@
+{
+  "cSpell.words": [
+    "audioplayers",
+    "beatmaplist",
+    "osayo",
+    "riverpod"
+  ],
+  "files.exclude": {
+    "**/.git": true,
+    "**/.svn": true,
+    "**/.hg": true,
+    "**/CVS": true,
+    "**/.DS_Store": true,
+    "**/Thumbs.db": true,
+    "**/*.g.dart": true,
+    "**/*.freezed.dart": true
+  },
+  "explorerExclude.backup": {},
+  "java.compile.nullAnalysis.mode": "automatic"
+}
