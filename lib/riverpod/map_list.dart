@@ -11,6 +11,5 @@ Future<MapList> fetchMapList(
     '/?post',
     data: query.toJson(),
   );
-  print(response.data);
   return MapList.fromJson(response.data);
 }

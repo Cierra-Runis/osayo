@@ -29,7 +29,7 @@ class _RootPageState extends State<RootPage> {
             label: 'Home',
           ),
           NavigationDestination(
-            icon: Icon(Icons.music_note_rounded),
+            icon: Icon(Icons.queue_music_rounded),
             label: 'Music',
           ),
           NavigationDestination(

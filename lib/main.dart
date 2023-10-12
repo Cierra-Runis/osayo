@@ -1,8 +1,7 @@
 import 'package:osayo/index.dart';
 
-import 'page/root_page.dart';
-
-AudioPlayer audioPlayer = AudioPlayer();
+final isarService = IsarService();
+final audioPlayer = AudioPlayer();
 
 void main() => runApp(const ProviderScope(child: OsayoApp()));
 
@@ -32,7 +31,6 @@ class OsayoApp extends StatelessWidget {
       title: Osayo.appName,
       theme: theme,
       darkTheme: dartTheme,
-      themeMode: ThemeMode.light,
       home: const SplashPage(child: RootPage()),
     );
   }
@@ -86,7 +84,7 @@ class MapListView extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final mapList = ref.watch(
-      fetchMapListProvider(query: const MapListQuery(keyword: 'kagura mea')),
+      fetchMapListProvider(query: const MapListQuery(keyword: 'phony')),
     );
 
     return mapList.when(
@@ -99,7 +97,7 @@ class MapListView extends ConsumerWidget {
   }
 }
 
-class MapItemCard extends StatelessWidget {
+class MapItemCard extends ConsumerWidget {
   const MapItemCard({
     super.key,
     required this.mapItem,
@@ -108,51 +106,89 @@ class MapItemCard extends StatelessWidget {
   final MapItem mapItem;
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
     return LayoutBuilder(
       builder: (context, constraints) {
         return Card(
           clipBehavior: Clip.antiAlias,
-          child: Column(
-            children: [
-              Image.network(
-                '${Osayo.apiStaticUrl}/beatmaps/${mapItem.sid}/covers/cover.webp',
-                width: constraints.maxWidth,
-                fit: BoxFit.cover,
-              ),
-              Wrap(
-                spacing: 8,
-                children: [
-                  Chip(label: Text(mapItem.sid.toString())),
-                  Chip(
-                    label:
-                        Text(MapMode.getMapModesBy(mapItem.modes).toString()),
-                  ),
-                  Chip(label: Text(mapItem.title)),
-                  Chip(label: Text(mapItem.titleU)),
-                  Chip(label: Text(mapItem.artist)),
-                  Chip(label: Text(mapItem.artistU)),
-                  Chip(label: Text(mapItem.creator)),
-                  Chip(label: Text(mapItem.favouriteCount.toString())),
-                  Chip(label: Text(mapItem.approvedLabel)),
-                  Chip(label: Text(mapItem.lastUpdate.toString())),
-                  Chip(label: Text(mapItem.playCount.toString())),
-                  IconButton(
-                    onPressed: () async {
-                      audioPlayer.play(
-                        UrlSource(
-                          '${Osayo.apiStaticUrl}/preview/${mapItem.sid}.mp3',
-                        ),
-                      );
-                    },
-                    icon: const Icon(Icons.music_note_rounded),
-                  )
-                ],
-              )
-            ],
+          child: InkWell(
+            onTap: () async {},
+            child: Column(
+              children: [
+                Image.network(
+                  '${Osayo.apiStaticUrl}/beatmaps/${mapItem.sid}/covers/cover.webp',
+                  width: constraints.maxWidth,
+                  fit: BoxFit.cover,
+                ),
+                Wrap(
+                  spacing: 8,
+                  children: [
+                    Chip(label: Text(mapItem.sid.toString())),
+                    Chip(
+                      label:
+                          Text(MapMode.getMapModesBy(mapItem.modes).toString()),
+                    ),
+                    Chip(label: Text(mapItem.title)),
+                    Chip(label: Text(mapItem.titleU)),
+                    Chip(label: Text(mapItem.artist)),
+                    Chip(label: Text(mapItem.artistU)),
+                    Chip(label: Text(mapItem.creator)),
+                    Chip(label: Text(mapItem.favouriteCount.toString())),
+                    Chip(label: Text(mapItem.approvedLabel)),
+                    Chip(label: Text(mapItem.lastUpdate.toString())),
+                    Chip(label: Text(mapItem.playCount.toString())),
+                    IconButton(
+                      onPressed: () async {
+                        audioPlayer.play(
+                          UrlSource(
+                            '${Osayo.apiStaticUrl}/preview/${mapItem.sid}.mp3',
+                          ),
+                        );
+                      },
+                      icon: const Icon(Icons.music_note_rounded),
+                    ),
+                    NewWidget(mapItem: mapItem),
+                  ],
+                )
+              ],
+            ),
           ),
         );
       },
+    );
+  }
+}
+
+class NewWidget extends ConsumerWidget {
+  const NewWidget({
+    super.key,
+    required this.mapItem,
+  });
+
+  final MapItem mapItem;
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    return IconButton(
+      onPressed: () async {
+        final response = await Dio(BaseOptions(baseUrl: Osayo.apiBaseUrl))
+            .get('/v2/beatmapinfo?K=${mapItem.sid}');
+
+        final mapDetail = MapDetail.fromJson(jsonDecode(response.data));
+
+        final music = Music(
+          id: Isar.autoIncrement,
+          sid: mapDetail.data.sid,
+          type: MusicType.web,
+          name: mapDetail.data.artist,
+          coverPath: mapDetail.data.bidData[0].bg,
+          musicPath: mapDetail.data.bidData[0].audio,
+          musicLength: mapDetail.data.bidData[0].length,
+        );
+
+        await isarService.saveMusic(music);
+      },
+      icon: const Icon(Icons.playlist_add_rounded),
     );
   }
 }
