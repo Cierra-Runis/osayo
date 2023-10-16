@@ -14,7 +14,6 @@ class Music {
     required this.musicLength,
   });
 
-  /// 日记 `id`
   final Id id;
 
   final int sid;
@@ -53,6 +52,9 @@ class Music {
         musicPath: musicPath ?? music.musicPath,
         musicLength: musicLength ?? music.musicLength,
       );
+
+  @override
+  String toString() => jsonEncode(toJson());
 }
 
 enum MusicType {

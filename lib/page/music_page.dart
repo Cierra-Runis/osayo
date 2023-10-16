@@ -28,37 +28,35 @@ class MusicPage extends StatelessWidget {
                     itemCount: snapshot.data!.length,
                     itemBuilder: (context, index) {
                       final music = snapshot.data![index];
+                      Osayo.printLog(music);
+
                       return BasedListTile(
                         leading: music.type.isLocal
-                            ? Image.file(
+                            ? ExtendedImage.file(
                                 File(music.coverPath),
-                                errorBuilder: (context, error, stackTrace) =>
-                                    const SizedBox(),
+                                // errorBuilder: (context, error, stackTrace) =>
+                                //     const SizedBox(),
                               )
-                            : Image.network(
-                                '${Osayo.apiStaticUrl}/beatmaps/${music.sid}/covers/cover.webp',
-                                width: 48,
-                                height: 48,
-                                fit: BoxFit.cover,
-                                errorBuilder: (context, error, stackTrace) =>
-                                    const SizedBox(),
+                            : ClipRRect(
+                                borderRadius: BorderRadius.circular(12),
+                                child: ExtendedImage.network(
+                                  '${Osayo.apiStaticUrl}/beatmaps/${music.sid}/covers/cover.webp',
+                                  width: 48,
+                                  height: 48,
+                                  fit: BoxFit.cover,
+                                ),
                               ),
-                        titleText: snapshot.data![index].name.toString(),
+                        titleText: music.name,
                         subtitleText: music.musicPath,
-                        onTap: () {
-                          print(music.musicPath);
-
-                          audioPlayer.play(
+                        detailText: music.type.name,
+                        onTap: () async {
+                          await audioPlayer.play(
                             music.type.isLocal
                                 ? DeviceFileSource(music.musicPath)
                                 : UrlSource(
                                     'https://dl.sayobot.cn/beatmaps/files/${music.sid}/${music.musicPath.isEmpty ? 'audio.ogg' : music.musicPath}',
                                   ),
                           );
-                        },
-                        onLongPress: () async {
-                          print(music);
-                          print(await isarService.deleteMusic(music.id));
                         },
                       );
                     },

@@ -84,7 +84,7 @@ class MapListView extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final mapList = ref.watch(
-      fetchMapListProvider(query: const MapListQuery(keyword: 'phony')),
+      MapListProvider(query: const MapListQuery(keyword: 'phony', limit: 200)),
     );
 
     return mapList.when(
@@ -115,7 +115,7 @@ class MapItemCard extends ConsumerWidget {
             onTap: () async {},
             child: Column(
               children: [
-                Image.network(
+                ExtendedImage.network(
                   '${Osayo.apiStaticUrl}/beatmaps/${mapItem.sid}/covers/cover.webp',
                   width: constraints.maxWidth,
                   fit: BoxFit.cover,
@@ -123,20 +123,6 @@ class MapItemCard extends ConsumerWidget {
                 Wrap(
                   spacing: 8,
                   children: [
-                    Chip(label: Text(mapItem.sid.toString())),
-                    Chip(
-                      label:
-                          Text(MapMode.getMapModesBy(mapItem.modes).toString()),
-                    ),
-                    Chip(label: Text(mapItem.title)),
-                    Chip(label: Text(mapItem.titleU)),
-                    Chip(label: Text(mapItem.artist)),
-                    Chip(label: Text(mapItem.artistU)),
-                    Chip(label: Text(mapItem.creator)),
-                    Chip(label: Text(mapItem.favouriteCount.toString())),
-                    Chip(label: Text(mapItem.approvedLabel)),
-                    Chip(label: Text(mapItem.lastUpdate.toString())),
-                    Chip(label: Text(mapItem.playCount.toString())),
                     IconButton(
                       onPressed: () async {
                         audioPlayer.play(

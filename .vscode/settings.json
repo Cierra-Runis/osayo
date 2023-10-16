@@ -16,5 +16,6 @@
     "**/*.freezed.dart": true
   },
   "explorerExclude.backup": {},
-  "java.compile.nullAnalysis.mode": "automatic"
+  "java.compile.nullAnalysis.mode": "automatic",
+  "java.configuration.updateBuildConfiguration": "automatic"
 }
